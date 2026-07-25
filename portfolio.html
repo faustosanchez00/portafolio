@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fausto Sánchez — Portafolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e0d0c;
+    --bg-panel:#17140f;
+    --ink:#ede8df;
+    --ink-dim:#948c7f;
+    --accent-warm:#e8955b;
+    --accent-cool:#3e8a8d;
+    --line:#2b2620;
+    --grain-opacity:0.05;
+    --glass-bg:rgba(30,26,20,0.38);
+    --glass-bg-strong:rgba(30,26,20,0.55);
+    --glass-border:rgba(237,232,223,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans',sans-serif;
+    font-weight:300;
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent-warm);color:#0e0d0c;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  :focus-visible{outline:2px solid var(--accent-warm);outline-offset:3px;}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--accent-warm);
+  }
+
+  h1,h2,h3{
+    font-family:'Bebas Neue',sans-serif;
+    font-weight:400;
+    letter-spacing:0.02em;
+    line-height:0.95;
+    text-transform:uppercase;
+  }
+
+  /* ---- glass utility: used sparingly, only on floating UI elements ---- */
+  .glass{
+    background:var(--glass-bg);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+    backdrop-filter:blur(18px) saturate(150%);
+    border:1px solid var(--glass-border);
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .glass-strong{background:var(--glass-bg-strong);}
+
+  /* grain overlay */
+  .grain{
+    position:fixed;inset:0;pointer-events:none;z-index:500;
+    opacity:var(--grain-opacity);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+  }
+
+  /* letterbox bars */
+  .letterbox-top,.letterbox-bottom{
+    position:fixed;left:0;right:0;height:14px;background:#000;z-index:400;
+    display:flex;align-items:center;
+  }
+  .letterbox-top{top:0;border-bottom:1px solid var(--line);}
+  .letterbox-bottom{bottom:0;border-top:1px solid var(--line);}
+  .letterbox-ticks{width:100%;display:flex;justify-content:space-between;padding:0 6px;}
+  .letterbox-ticks span{width:1px;height:5px;background:var(--line);}
+
+  /* nav — floating glass pills, Apple-style segmented controls */
+  header{
+    position:fixed;top:28px;left:0;right:0;z-index:300;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:0 clamp(20px,5vw,64px);
+  }
+  .logo{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.8rem;letter-spacing:0.05em;
+    padding:12px 18px;
+  }
+  .logo span{color:var(--accent-warm);}
+  nav ul{
+    display:flex;gap:clamp(14px,2.5vw,28px);list-style:none;
+    font-family:'IBM Plex Mono',monospace;font-size:0.7rem;
+    letter-spacing:0.08em;text-transform:uppercase;
+    padding:14px 24px;
+  }
+  nav a{position:relative;color:var(--ink-dim);transition:color .3s;}
+  nav a:hover{color:var(--ink);}
+  nav a::after{
+    content:'';position:absolute;left:0;bottom:-4px;width:0;height:1px;
+    background:var(--accent-warm);transition:width .3s;
+  }
+  nav a:hover::after{width:100%;}
+  .nav-toggle{display:none;background:none;border:none;color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;font-size:0.8rem;cursor:pointer;}
+
+  section{padding:120px clamp(20px,5vw,64px);position:relative;}
+
+  .tc-marker{display:flex;align-items:center;gap:16px;margin-bottom:56px;}
+  .tc-marker .tc{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--accent-cool);letter-spacing:0.05em;}
+  .tc-marker .rule{flex:1;height:1px;background:var(--line);}
+
+  /* ================= HERO — full-bleed video ================= */
+  .hero{
+    height:100vh;min-height:640px;
+    display:flex;align-items:flex-end;
+    padding:0;
+    overflow:hidden;
+  }
+  .hero-media{
+    position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(circle at 25% 20%, rgba(232,149,91,0.16), transparent 55%),
+      radial-gradient(circle at 78% 75%, rgba(62,138,141,0.2), transparent 55%),
+      linear-gradient(135deg,#221d16,#0e0d0c 70%);
+    animation:driftBg 22s ease-in-out infinite alternate;
+  }
+  @keyframes driftBg{
+    from{background-position:0% 0%, 100% 100%, 0 0;}
+    to{background-position:8% 6%, 92% 92%, 0 0;}
+  }
+  .hero-media video{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  }
+  .hero-overlay{
+    position:absolute;inset:0;z-index:1;
+    background:
+      linear-gradient(to top, rgba(10,9,8,0.92) 0%, rgba(10,9,8,0.25) 42%, rgba(10,9,8,0.45) 100%),
+      linear-gradient(to bottom, rgba(10,9,8,0.55) 0%, transparent 22%);
+  }
+
+  .hero-content{
+    position:relative;z-index:2;
+    padding:0 clamp(20px,5vw,64px) 96px;
+    max-width:900px;
+  }
+  .hero-content .eyebrow{margin-bottom:10px;display:block;}
+  .hero-content h1{
+    font-size:clamp(2.8rem,7.5vw,6.2rem);
+  }
+
+  /* badge REC, ahora en el flujo normal, arriba del eyebrow */
+  .playhead-top{
+    display:none; /* JS lo activa cuando hay un <source> real */
+    width:fit-content;
+    font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--ink-dim);
+    letter-spacing:0.05em;padding:8px 14px;margin-bottom:18px;
+  }
+  .playhead-top .clock{color:var(--ink);}
+
+  /* floating glass quick-facts bar — ancho automático, se ajusta al contenido */
+  .hero-float{
+    position:absolute;right:clamp(20px,5vw,64px);bottom:96px;z-index:2;
+    display:flex;flex-wrap:wrap;gap:22px 26px;
+    padding:16px 24px;
+    width:fit-content;
+    max-width:min(80vw,560px);
+  }
+  .hero-float div{font-family:'IBM Plex Mono',monospace;font-size:0.66rem;color:var(--ink-dim);letter-spacing:0.04em;white-space:normal;}
+  .hero-float div strong{display:block;color:var(--ink);font-size:0.82rem;font-family:'Work Sans',sans-serif;font-weight:500;margin-bottom:3px;letter-spacing:0;text-transform:none;}
+
+  @media(max-width:760px){
+    .hero-float{display:none;}
+  }
+
+  /* ================= WORK GRID — galería masonry, se adapta a cada orientación ================= */
+  .work-grid{
+    columns:1;
+    column-gap:28px;
+  }
+  @media(min-width:640px){.work-grid{columns:2;}}
+  @media(min-width:1080px){.work-grid{columns:3;}}
+  .card{
+    display:inline-block;
+    width:100%;
+    break-inside:avoid;
+    -webkit-column-break-inside:avoid;
+    margin:0 0 28px;
+    background:var(--bg-panel);border:1px solid var(--line);
+    opacity:0;transform:translateY(24px);
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .card.in{opacity:1;transform:translateY(0);}
+  .frame{
+    position:relative;overflow:hidden;
+    min-height:180px; /* respaldo mientras no haya clip real */
+    background:
+      radial-gradient(circle at 30% 20%, rgba(232,149,91,0.18), transparent 55%),
+      radial-gradient(circle at 75% 80%, rgba(62,138,141,0.22), transparent 55%),
+      linear-gradient(135deg,#201c16,#141210);
+  }
+  /* el propio video/foto define la altura -> vertical queda alto y angosto, horizontal queda ancho y bajo */
+  .frame video,.frame img{width:100%;height:auto;display:block;}
+  .frame .placeholder-tag{
+    position:absolute;top:10px;left:10px;font-family:'IBM Plex Mono',monospace;font-size:0.6rem;
+    letter-spacing:0.08em;color:var(--ink-dim);background:rgba(0,0,0,0.4);padding:3px 7px;border:1px solid var(--line);
+  }
+  .frame .tc-corner{position:absolute;bottom:10px;right:10px;font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:rgba(237,232,223,0.65);}
+  .frame .play{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:44px;height:44px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .frame .play::after{
+    content:'';border-style:solid;border-width:6px 0 6px 10px;
+    border-color:transparent transparent transparent rgba(237,232,223,0.85);margin-left:3px;
+  }
+  .card-body{padding:20px 22px 24px;}
+  .card-body h3{font-size:1.5rem;margin-bottom:8px;}
+  .card-desc{color:var(--ink-dim);font-size:0.9rem;}
+
+  /* ================= ABOUT ================= */
+  .about-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:start;}
+  @media(max-width:800px){.about-grid{grid-template-columns:1fr;}}
+  .about-grid h2{font-size:clamp(2.4rem,5vw,3.6rem);margin-bottom:24px;}
+  .about-text p{color:var(--ink-dim);margin-bottom:16px;max-width:56ch;}
+  .about-text strong{color:var(--ink);font-weight:500;}
+  /* la foto reutiliza el look de .frame; su altura la define la propia imagen */
+  .about-photo{min-height:260px;}
+
+  /* ================= CONTACT ================= */
+  .contact h2{font-size:clamp(2.6rem,7vw,5.5rem);max-width:900px;}
+  .contact-links{margin-top:40px;display:flex;flex-wrap:wrap;gap:14px;}
+  .contact-links a{
+    font-family:'IBM Plex Mono',monospace;font-size:0.78rem;letter-spacing:0.04em;
+    padding:14px 24px;transition:border-color .3s, color .3s;
+  }
+  .contact-links a:hover{border-color:var(--accent-warm);color:var(--accent-warm);}
+
+  footer{
+    padding:28px clamp(20px,5vw,64px) 44px;display:flex;justify-content:space-between;
+    font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--ink-dim);
+    letter-spacing:0.05em;border-top:1px solid var(--line);
+  }
+
+  @media(max-width:700px){
+    nav ul{
+      position:fixed;top:0;right:0;height:100vh;width:70%;
+      background:var(--glass-bg-strong);
+      -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+      flex-direction:column;justify-content:center;align-items:flex-start;
+      padding:40px;gap:26px;transform:translateX(100%);transition:transform .4s ease;
+      border-left:1px solid var(--glass-border);border-radius:0;
+    }
+    nav ul.open{transform:translateX(0);}
+    .nav-toggle{display:block;}
+    section{padding:90px 20px;}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+    .card{transition:none;opacity:1;transform:none;}
+    .hero-media{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="letterbox-top"><div class="letterbox-ticks" id="ticksTop"></div></div>
+<div class="letterbox-bottom"><div class="letterbox-ticks" id="ticksBottom"></div></div>
+
+<header>
+  <div class="logo glass">FAUSTO SÁNCHEZ<span> · </span>PORTAFOLIO</div>
+  <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">MENÚ</button>
+  <nav><ul id="navList" class="glass">
+    <li><a href="#trabajos">Trabajos</a></li>
+    <li><a href="#sobre-mi">Sobre mí</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul></nav>
+</header>
+
+<main>
+
+  <!-- HERO — reel a pantalla casi completa -->
+  <section class="hero" id="inicio">
+    <div class="hero-media">
+      <video id="heroVideo" autoplay muted loop playsinline>
+        <source src="mangekyo2.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <div class="playhead-top glass" id="playheadBadge">REC <span class="clock" id="clock">00:00:00:00</span></div>
+      <span class="eyebrow">Portafolio — Edición &amp; Color</span>
+      <h1>Fausto Sánchez</h1>
+    </div>
+
+    <div class="hero-float glass">
+      <div>Contenido visual pensado para que las marcas<br>se vean tan bien como realmente son.</div>
+    </div>
+  </section>
+
+  <!-- TRABAJOS -->
+  <section id="trabajos">
+    <div class="tc-marker">
+      <span class="tc">00:01:12:00</span>
+      <div class="rule"></div>
+      <span class="eyebrow" style="margin:0;">Trabajos seleccionados</span>
+    </div>
+
+    <div class="work-grid">
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <!-- Sustituye por tu clip: -->
+            <!-- <source src="mezcal-28.mp4" type="video/mp4"> -->
+             <source src="https://videos.files.wordpress.com/K37f18BO/video-3.mp4" type="video/mp4">
+          </video>
+          <span class="tc-corner">00:00:34:12</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Mezcal 28</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido social de la marca Mezcal 28 producidos en diferentes restaurantes. La colorización, la edición dinámica, y los SFX colocados con precisión, se usaron para transmitir la esencia de la marca de forma inmersiva.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <source src="https://videos.files.wordpress.com/a7L4B9Ak/libreria.mp4" type="video/mp4">
+          </video>
+          <span class="placeholder-tag">Sustituye por tu clip</span>
+          <span class="tc-corner">00:00:00:00</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Producción de contenido para Librería Liminal</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido. Buscando una colorización amena, edición sutil buscando sostener la identidad visual de la marca.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <source src="https://videos.files.wordpress.com/MferhxKe/equipo_h.mp4" type="video/mp4">
+          </video>
+          <span class="placeholder-tag">Sustituye por tu clip</span>
+          <span class="tc-corner">00:00:00:00</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Proyecto personal long-form</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido para YouTube.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <source src="https://videos.files.wordpress.com/4rGm4LPv/content_creation_1.mp4" type="video/mp4">
+          </video>
+          <span class="placeholder-tag">Sustituye por tu clip</span>
+          <span class="tc-corner">00:00:00:00</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Proyecto personal short-form</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido. Edición dinámica dirigida a redes sociales. Buscando retener la atención, se utilizaron títulos grandes y presentes, sfx inmersivos e iluminación profunda. </p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <source src="https://videos.files.wordpress.com/mQn34cMJ/personajes.mp4" type="video/mp4">
+          </video>
+          <span class="placeholder-tag">Sustituye por tu clip</span>
+          <span class="tc-corner">00:00:00:00</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Contenido con IA para Arcade Monterrey</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido. Edición hecha principalmente con IA. A partir de fotos tomadas en el lugar, se buscó crear animaciones dinámicas sobre los distinos personajes imitando animaciones. Se utilizó en su mayoría el motor de IA <strong>Kling 2.5 Turbo desde Higgsfield</strong></p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <source src="https://videos.files.wordpress.com/IFwk3TNT/mangekyo1.mp4" type="video/mp4">
+          </video>
+          <span class="placeholder-tag">Sustituye por tu clip</span>
+          <span class="tc-corner">00:00:00:00</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Colorización para Mangekyo</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido. Una de las tomas con que se inició el proyecto y usada para crear el estilo visual de los videos. La marca buscaba iluminación y colorización cálida con tonos rojizos, alto contraste, transmitiendo alta calidad y un producto premium.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <source src="https://videos.files.wordpress.com/1OPcyJas/chilacos-almendrados.mp4" type="video/mp4">
+          </video>
+          <span class="placeholder-tag">Sustituye por tu clip</span>
+          <span class="tc-corner">00:00:00:00</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Contenido para Liminal (cafetería)</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido. Presentación de su producto "Chilaquiles almendrados" como parte del contenido mensual.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <source src="https://videos.files.wordpress.com/V8XE3TaY/burger_demogorgon.mp4" type="video/mp4">
+          </video>
+          <span class="placeholder-tag">Sustituye por tu clip</span>
+          <span class="tc-corner">00:00:00:00</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Contenido con IA para Arcade Monterrey</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido. En su producto de edición liminada, la marca buscaba simular visualmente la serie de "Stranger Things", por ello, en postproducción se buscó este look rojo. Finalmente utilizamos IA para animar una etatua de un Demogorgon y crear tensión y suspenso.</p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="frame">
+          <video muted loop playsinline>
+            <source src="https://videos.files.wordpress.com/ZEWXzNL6/condesa_v1.mp4" type="video/mp4">
+          </video>
+          <span class="placeholder-tag">Proyecto para colega barista</span>
+          <span class="tc-corner">00:00:00:00</span>
+          <div class="play"></div>
+        </div>
+        <div class="card-body">
+          <h3>Proyecto para colega barista</h3>
+          <p class="card-desc">Planificación, producción, fotografía y edición del contenido. Para participación en un concurso, Daniel necesitaba un video para presentación de su bebida. Este fue el resultado.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- SOBRE MÍ -->
+  <section id="sobre-mi">
+    <div class="tc-marker">
+      <span class="tc">00:02:40:00</span>
+      <div class="rule"></div>
+      <span class="eyebrow" style="margin:0;">Sobre mí</span>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text">
+        <h2>Fotografía, edición y color.</h2>
+        <p>Trabajo como <strong>fotógrafo, editor de video y colorista</strong>, y lo que más disfruto es poder involucrarme en todo el proceso: imaginar y planificar, crear las imágenes y darles el acabado final en edición y color.</p>
+        <p>Me gusta trabajar con orden, cuidar los detalles y hacer que cada proyecto tenga una intención, y no solo una buena estética.</p>
+      </div>
+      <div class="frame about-photo">
+        <img src="DSC_2760.jpg" alt="Foto de Fausto Sánchez">
+        <!-- Sustituye el src de arriba por tu foto, p. ej.: src="foto.jpg" -->
+        <span class="placeholder-tag" id="photoTag">Sustituye por tu foto</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="contact">
+    <div class="tc-marker">
+      <span class="tc">00:03:15:00</span>
+      <div class="rule"></div>
+      <span class="eyebrow" style="margin:0;">Contacto</span>
+    </div>
+    <h2>¿Tienes algún<br>proyecto en puerta?</h2>
+      <div>
+        <p>Escríbeme y hagámoslo real</p>
+      </div>
+    <div class="contact-links">
+      <a class="glass" href="mailto:fsanchez6364@gmail.com">fsanchez6364@gmail.com</a>
+      <a class="glass" href="https://instagram.com/fausto.cr3">Instagram</a>
+      <a class="glass" href="https://wa.me/message/NADWWZ3TN6FEO1">81 2521 8283</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>© <span id="year"></span> Fausto Sánchez — Editor &amp; Colorista</span>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  document.getElementById('ticksTop').innerHTML = Array(60).fill('<span></span>').join('');
+  document.getElementById('ticksBottom').innerHTML = Array(60).fill('<span></span>').join('');
+
+  const toggle = document.getElementById('navToggle');
+  const navList = document.getElementById('navList');
+  toggle.addEventListener('click', () => navList.classList.toggle('open'));
+  navList.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navList.classList.remove('open')));
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clock = document.getElementById('clock');
+  if(!reduce){
+    const start = Date.now();
+    function pad(n){return String(n).padStart(2,'0');}
+    function tick(){
+      const elapsed = Date.now() - start;
+      const totalFrames = Math.floor(elapsed / (1000/24));
+      const frames = totalFrames % 24;
+      const totalSeconds = Math.floor(totalFrames / 24);
+      const seconds = totalSeconds % 60;
+      const minutes = Math.floor(totalSeconds / 60) % 60;
+      const hours = Math.floor(totalSeconds / 3600);
+      clock.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}:${pad(frames)}`;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  const cards = document.querySelectorAll('.card');
+  if('IntersectionObserver' in window && !reduce){
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    }, {threshold:0.15});
+    cards.forEach(c => io.observe(c));
+  } else {
+    cards.forEach(c => c.classList.add('in'));
+  }
+
+  // activa cualquier <video> con un <source> real: lo reproduce en loop y oculta los indicadores de placeholder
+  function activateVideo(video){
+    const source = video.querySelector('source');
+    if(!source || !source.getAttribute('src')) return;
+    video.muted = true; // requerido por los navegadores para autoplay
+    const frame = video.closest('.frame');
+    if(frame){
+      const tag = frame.querySelector('.placeholder-tag'); if(tag) tag.style.display = 'none';
+      const play = frame.querySelector('.play'); if(play) play.style.display = 'none';
+    }
+    const tryPlay = () => video.play().catch(err => console.warn('No se pudo autoreproducir un video:', err));
+    tryPlay();
+    video.addEventListener('loadeddata', tryPlay);
+    document.addEventListener('click', tryPlay, { once: true }); // respaldo: primer clic del usuario
+  }
+  document.querySelectorAll('video').forEach(activateVideo);
+
+  // muestra el badge REC solo cuando el video del hero tenga clip real
+  const heroVideo = document.getElementById('heroVideo');
+  const badge = document.getElementById('playheadBadge');
+  if(heroVideo.querySelector('source') && heroVideo.querySelector('source').getAttribute('src')){
+    badge.style.display = 'block';
+  }
+
+  // oculta el indicador de placeholder de la foto de "Sobre mí" si ya se puso una imagen real
+  const aboutImg = document.querySelector('.about-photo img');
+  const photoTag = document.getElementById('photoTag');
+  if(aboutImg && aboutImg.getAttribute('src')){
+    photoTag.style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
