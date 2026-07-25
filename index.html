@@ -220,6 +220,22 @@
     content:'';border-style:solid;border-width:6px 0 6px 10px;
     border-color:transparent transparent transparent rgba(237,232,223,0.85);margin-left:3px;
   }
+  .media-controls{
+    position:absolute;bottom:12px;right:12px;z-index:4;
+    display:flex;gap:6px;padding:6px;
+    opacity:0.55;
+    transition:opacity .25s ease;
+  }
+  .frame:hover .media-controls,
+  .media-controls:focus-within{opacity:1;}
+  .mc-btn{
+    width:30px;height:30px;border:none;background:transparent;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    border-radius:8px;
+  }
+  .mc-btn:hover{background:rgba(237,232,223,0.12);}
+  .mc-btn svg{width:15px;height:15px;}
+
   .card-body{padding:20px 22px 24px;}
   .card-body h3{font-size:1.5rem;margin-bottom:8px;}
   .card-desc{color:var(--ink-dim);font-size:0.9rem;}
@@ -556,6 +572,36 @@
     video.addEventListener('loadeddata', tryPlay);
     document.addEventListener('click', tryPlay, { once: true }); // respaldo: primer clic del usuario
   }
+  const iconMuted = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9v6h4l5 5V4L8 9H4z"/><line x1="16" y1="9" x2="21" y2="15"/><line x1="21" y1="9" x2="16" y2="15"/></svg>';
+  const iconUnmuted = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M16 8.5a5 5 0 0 1 0 7"/><path d="M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>';
+  const iconExpand = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 4H4v5"/><path d="M4 15v5h5"/><path d="M15 4h5v5"/><path d="M20 15v5h-5"/></svg>';
+
+  // controles de audio/pantalla completa — solo para los videos de "Trabajos seleccionados", no el hero
+  function injectMediaControls(video){
+    const host = video.closest('.frame');
+    if(!host || host.querySelector('.media-controls')) return;
+    const bar = document.createElement('div');
+    bar.className = 'media-controls glass';
+    bar.innerHTML =
+      '<button type="button" class="mc-btn mc-mute" aria-label="Activar sonido">' + iconMuted + '</button>' +
+      '<button type="button" class="mc-btn mc-full" aria-label="Pantalla completa">' + iconExpand + '</button>';
+    host.appendChild(bar);
+
+    const muteBtn = bar.querySelector('.mc-mute');
+    muteBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      video.muted = !video.muted;
+      muteBtn.innerHTML = video.muted ? iconMuted : iconUnmuted;
+      muteBtn.setAttribute('aria-label', video.muted ? 'Activar sonido' : 'Silenciar');
+    });
+
+    bar.querySelector('.mc-full').addEventListener('click', function(e){
+      e.stopPropagation();
+      if(video.requestFullscreen) video.requestFullscreen();
+      else if(video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+    });
+  }
+  document.querySelectorAll('.work-grid video').forEach(injectMediaControls);
   document.querySelectorAll('video').forEach(activateVideo);
 
   // muestra el badge REC solo cuando el video del hero tenga clip real
